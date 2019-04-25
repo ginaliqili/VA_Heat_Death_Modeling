@@ -87,18 +87,8 @@ var(wp_data$death_count) > mean(wp_data$death_count)
 var(cm_data$death_count) > mean(cm_data$death_count)
 var(swm_data$death_count) > mean(swm_data$death_count)
 
-############ NORTHERN CLIMATE DIVISION #######################
-library(stargazer)
-hist(n_data$death_count, breaks=20)
-plot(n_data$tmmx_f, n_data$death_count)
-summary(n_data)
-stargazer(n_data, type="text")
-
-mean(n_data$tot_pop[n_data$year==1979])
-mean(n_data$tot_pop[n_data$year==2016])
-mean(n_data$tmmx_f)
-
-clim_div_data = n_data
+############ GAMS BY CLIAMTE DIVISION #######################
+clim_div_data = swm_data
 
 gam_hi <- gam(death_count ~ dow_abbrev + s(heat_index) + month + s(year) + offset(log(tot_pop)), family=quasipoisson, data=clim_div_data, method="REML")
 gam_temp <- gam(death_count ~ s(tmmx_f) + s(rmax) + dow_abbrev + month + s(year) + offset(log(tot_pop)), data=clim_div_data, family=quasipoisson, method="REML")
