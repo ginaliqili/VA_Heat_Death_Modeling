@@ -9,9 +9,7 @@ require(ggplot2)
 data <- read.csv(file="H:/data/all_data_final.csv", header=TRUE, sep=",")
 data$date<-as.Date(data$date, format="%m/%d/%Y")
 data$month <- as.factor(format.Date(data$date, format="%m"))
-# only for plotting
-#data$month <- as.numeric(data$month)
-# replace all -999s with NA (these are the lag values that don't exist)
+
 data[data==-999] <-NA
 
 # seasonal variation/long term trend
@@ -24,9 +22,6 @@ plot(data_agg_month$month, data_agg_month$x, cex.lab=2, cex.axis = 2, pch=19, xl
 ggplot(data=swm_data, aes(month, death_count)) + stat_summary(fun.y = mean, geom="point", size=3) + xlab("Month") + ylab("Average Number of Daily Deaths") + theme(axis.text=element_text(size=14), axis.title=element_text(size=14, face="bold"), axis.title.y = element_text(margin=margin(r = 20)), axis.title.x = element_text(margin=margin(t = 20)))
 ggplot(data=swm_data, aes(year, death_count)) + stat_summary(fun.y = mean, geom="point", size=3) + xlab("Year") + ylab("Average Number of Daily Deaths") + theme(axis.text=element_text(size=14), axis.title=element_text(size=14, face="bold"), axis.title.y = element_text(margin=margin(r = 20)), axis.title.x = element_text(margin=margin(t = 20)))
 
-# binning temperatures
-tapply(data$death_count, cut(data$tmmx_f, seq(0, 100, by=5)), mean)
-
 
 ggplot(data=data, aes(month, tmmx_f)) + stat_summary(fun.y = max, geom="point", size=3) + xlab("Month") + ylab("Maximum Temperature During Hottest Day") + theme(axis.text=element_text(size=14), axis.title=element_text(size=14, face="bold"), axis.title.y = element_text(margin=margin(r = 20)), axis.title.x = element_text(margin=margin(t = 20)))
 
@@ -35,18 +30,11 @@ ggplot(data=data, aes(month, tmmx_f)) + stat_summary(fun.y = max, geom="point", 
 summer_months <- c('04', '05', '06', '07', '08', '09', '10')
 data <- subset(data, format.Date(date, "%m") %in% summer_months)
 
-# subset again, keep tempeartures about 60 degrees only
-#data <- data[ which(data$tmmx_f >=60), ]
-
 # reorder dow factor to be Sunday-Saturday, also change value to abbreviations
 data$dow <- factor(data$dow, levels=c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
 data$dow_abbrev <- mapvalues(data$dow, 
                              from=c("Sunday","Monday","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"), 
                              to=c("Su","M","T", "W", "Th", "F", "Sa"))
-# add decades column
-data<-mutate(data, decade = year - (year %% 10))
-data[data$year==1979, ] <- mutate(data[data$year==1979, ], decade = 1980)
-data$decade <- sub("$", "s", data$decade)
 
 n_data <- data[which(data$clim_div=='NORTHERN'),]
 tw_data <- data[which(data$clim_div=='TIDEWATER'),]
